@@ -16,7 +16,7 @@ co(function * () {
     yield app.prepare();
 
     const client = yield MongoClient.connect(MONGO_URL);
-    const db = client.db('modulo');
+    const db = client.db(process.env.MONGO_NAME);
 
     // Configure express to expose a REST API
     const server = express();
