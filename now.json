@@ -1,0 +1,9 @@
+{
+    "name": "modulo",
+    "alias": "modulo-app",
+    "env": {
+        "MONGO_USER": "@mongouser",
+        "MONGO_PASS": "@mongopass",
+        "MONGO_NAME": "@mongoname"
+    }
+}

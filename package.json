@@ -10,10 +10,6 @@
         "start": "NODE_ENV=production node server/index.js",
         "deploy": "npm run build && now && now alias"
     },
-    "now": {
-        "name": "modulo",
-        "alias": "modulo-app"
-    },
     "author": "Christopher Campbell",
     "license": "ISC",
     "dependencies": {
@@ -34,6 +30,7 @@
         "react-dom": "^16.5.2"
     },
     "devDependencies": {
-        "nodemon": "^1.18.4"
+        "nodemon": "^1.18.4",
+        "now-env": "^3.1.0"
     }
 }

@@ -8,7 +8,7 @@ const next = require('next');
 const dev = process.env.NODE_ENV !== 'production';
 const app = next({ dev });
 const handle = app.getRequestHandler();
-const MONGO_URL = `mongodb://${process.env.MONGO_USER}:${process.env.MONGO_PASS}.mlab.com:23963/${process.env.MONGO_NAME}`;
+const MONGO_URL = `mongodb://${process.env.MONGO_USER}:${process.env.MONGO_PASS}@ds123963.mlab.com:23963/${process.env.MONGO_NAME}`;
 const PORT = 3000;
 
 co(function * () {
