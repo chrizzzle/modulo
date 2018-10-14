@@ -5,7 +5,7 @@ const UserType = require('./user');
 const { ObjectId } = require('mongodb');
 const express = require('express');
 
-module.exports = db => {
+module.exports = () => {
     const router = express.Router();
 
     const wrapAsync = handler => (req, res) => handler(req)
@@ -14,23 +14,6 @@ module.exports = db => {
 
     router.get('/version', wrapAsync(async function() {
         return {version: "1.0.0"};
-    }));
-
-    router.get('/', wrapAsync(async function(req) {
-        return db.collection('User').find().sort({ createdAt: -1 }).toArray();
-    }));
-
-    router.post('/', wrapAsync(async function(req) {
-        const user = new UserType(req.body)
-        await db.collection('User').insertOne(user);
-        return { user: user }
-    }));
-
-    router.delete('/:id', wrapAsync(async function(req) {
-        const { result } = await db.collection('User').deleteOne({
-            _id: Archetype.to(req.params.id, ObjectId)
-        });
-        return { result };
     }));
 
     return router;
