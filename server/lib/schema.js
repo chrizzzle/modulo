@@ -11,7 +11,9 @@ const sessionModel = mongoose.model('Session', {
     timer: Number,
     countdown: Number,
     active: Boolean,
-    percent: Number
+    percent: Number,
+    question: String,
+    description: String
 });
 
 const optionModel = mongoose.model('Option', {
@@ -30,6 +32,10 @@ const voteModel = mongoose.model('Vote', {
 const userModel = mongoose.model('User', {
     _id: mongoose.Schema.Types.ObjectId,
 });
+
+mongoose.Types.ObjectId.prototype.valueOf = function () {
+    return this.toString();
+};
 
 const createVoteCount = (sessionId, userId) => {
     return Promise.resolve().then(() => {
@@ -65,13 +71,24 @@ const pubsub = new PubSub();
 
 // Construct a schema, using GraphQL schema language
 const typeDefs = gql`
+          input CreateOption {
+            name: String!
+          }
+          
+          input CreateSession {
+            question: String!
+            description: String!
+          }
+  
           type Session {
             _id: ID!,
             name: String!,
             timer: Int!,
             countdown: Int!,
             active: Boolean!,
-            percent: Int!
+            percent: Int!,
+            question: String!,
+            description: String!
           }
         
           type Option {
@@ -109,7 +126,7 @@ const typeDefs = gql`
           
           type Mutation {
             deleteSession(_id: ID!): Boolean
-            createSession(name: String!): Session
+            createSession(createSession: CreateSession!, createOptions: [CreateOption]): Session
             createOption(name: String!, sessionId: ID!): Option
             createVote(sessionId: ID!, optionId: ID!, userId: ID!): Vote
             startSession(sessionId: ID!): Session
@@ -209,18 +226,30 @@ const resolvers = {
                 });
             });
         },
-        createSession: (root, args, context, info) => {
+        createSession: (root, {createSession, createOptions}, context, info) => {
+            console.log('createSession');
             return new Promise((resolve, reject) => {
-                const session = new sessionModel(args);
+                const session = new sessionModel();
                 session._id = mongoose.Types.ObjectId();
                 session.timer = 0;
                 session.countdown = 0;
                 session.active = false;
                 session.percent = 0;
+                session.question = createSession.question;
+                session.description = createSession.description;
 
                 session.save((err) => {
                     if (err) { reject(err); }
-                    else { resolve(session); }
+                    else {
+                        createOptions.forEach((createOption) => {
+                            const option = new optionModel();
+                            option._id = mongoose.Types.ObjectId();
+                            option.sessionId = session._id.toString();
+                            option.name = createOption.name;
+                            option.save();
+                        });
+                        resolve(session);
+                    }
                 });
             });
         },
