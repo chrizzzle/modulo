@@ -40,16 +40,26 @@ class MyApp extends App {
                     <CssBaseline />
                     <ApolloProvider client={apolloClient}>
                         <AppBar position="static" color="default">
-                            <Toolbar>
-                                <Typography variant="h6" color="inherit">VTR</Typography>
-                            </Toolbar>
+                            <a href="/">
+                                <Toolbar>
+                                        <Typography variant="h6" color="inherit">VTR</Typography>
+                                </Toolbar>
+                            </a>
                         </AppBar>
 
                         <div className="container">
-                            <style jsx>{`
-                              .container {
-                                padding: 15px;
-                              }
+                            <style jsx global={true}>{`
+                                a,
+                                a:link,
+                                a:hover,
+                                a:active,
+                                a:visited {
+                                    text-decoration: none;
+                                    color: currentColor;
+                                }
+                                .container {
+                                    padding: 15px;
+                                }
                             `}</style>
                             <Component pageContext={this.pageContext} {...pageProps} />
                         </div>

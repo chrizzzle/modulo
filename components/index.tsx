@@ -5,6 +5,7 @@ import ListItem from '@material-ui/core/ListItem/ListItem';
 import ListItemText from '@material-ui/core/ListItemText/ListItemText';
 import ListItemIcon from '@material-ui/core/ListItemIcon/ListItemIcon';
 import CheckIcon from '@material-ui/icons/Check';
+
 import Head from 'next/head';
 
 
@@ -19,14 +20,14 @@ export default (props: IndexProps) => (
         <Head><title>VTR</title></Head>
         {
             props.data.sessions.map((session: Session) => (
-                <Link href={`/session/${session._id}`} key={session._id}>
-                    <ListItem>
+                <a href={`/session?id=${session._id}`} key={session._id}>
+                    <ListItem disableGutters={true}>
                         <ListItemText primary={session.question} secondary={session.description}/>
                         <ListItemIcon>
-                            <CheckIcon />
+                            <CheckIcon/>
                         </ListItemIcon>
                     </ListItem>
-                </Link>
+                </a>
             ))
         }
         <Link href="/create">
