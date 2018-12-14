@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import Button from '@material-ui/core/Button/Button';
 import {Session} from '../entities/Session';
 import ListItem from '@material-ui/core/ListItem/ListItem';
@@ -30,8 +29,8 @@ export default (props: IndexProps) => (
                 </a>
             ))
         }
-        <Link href="/create">
+        <a href="/create">
             <Button variant="contained" color="primary">Create new Poll</Button>
-        </Link>
+        </a>
     </div>
 );

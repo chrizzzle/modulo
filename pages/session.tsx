@@ -5,35 +5,31 @@ import {Option} from '../entities/Option';
 import {NextContext} from 'next';
 import {ChangeEvent} from 'react';
 import {Session as SessionModel} from "entities/Session";
-import {GET_SESSIONS} from './index';
 
 interface SessionPageProps {
     sessionId: string | string[] | undefined;
 }
 
 
-const GET_SESSION = gql`
-query Session($sessionId: ID!, $userId: ID!) {
+export const GET_SESSION = gql`
+query Session($sessionId: ID!) {
     session(_id: $sessionId) {
         _id
         question
         description
     }
-    
-    options(sessionId: $sessionId, userId: $userId) {
-        _id
-        name
-        checked
-    }
-    
+}`;
+
+const GET_VOTE_COUNT_BY_SESSION = gql`
+query VoteCount($sessionId: ID!) {
     voteCountBySession(sessionId: $sessionId){
         count
     }
 }
 `;
 
-const GET_OPTIONS = gql`
-{
+export const GET_OPTIONS_BY_SESSION_AND_USER = gql`
+query Options($sessionId: ID!, $userId: ID!) {
     options(sessionId: $sessionId, userId: $userId) {
         _id
         name
@@ -52,7 +48,7 @@ mutation CreateVote($sessionId: ID!, $optionId: ID!, $userId: ID!, $value: Boole
 }
 `;
 
-const VOTE_SUBSCRIPTION = gql`
+export const VOTE_COUNT_SUBSCRIPTION = gql`
 subscription VoteCount($sessionId: ID!){
     voteCountBySession(sessionId: $sessionId){
         count
@@ -63,7 +59,15 @@ subscription VoteCount($sessionId: ID!){
 
 const SessionPage = compose(
     graphql(GET_SESSION, {
-        name: 'data',
+        name: 'sessionQuery',
+        options: (props: SessionPageProps) => ({
+            variables: {
+                sessionId: props.sessionId
+            }
+        })
+    }),
+    graphql(GET_OPTIONS_BY_SESSION_AND_USER, {
+        name: 'optionsQuery',
         options: (props: SessionPageProps) => ({
             variables: {
                 sessionId: props.sessionId,
@@ -71,8 +75,16 @@ const SessionPage = compose(
             }
         })
     }),
-    graphql(VOTE_SUBSCRIPTION, {
-        name: 'voteCount',
+    graphql(GET_VOTE_COUNT_BY_SESSION, {
+        name: 'voteCountQuery',
+        options: (props: SessionPageProps) => ({
+            variables: {
+                sessionId: props.sessionId
+            }
+        })
+    }),
+    graphql(VOTE_COUNT_SUBSCRIPTION, {
+        name: 'voteCountSubscription',
         options: (props: SessionPageProps) => ({
             variables: {
                 sessionId: props.sessionId
@@ -92,18 +104,16 @@ const SessionPage = compose(
                         userId: '1',
                         value: (e.target as HTMLFormElement).checked
                     },
-                    update: (cache, mutationResult) => {
-                        console.log(mutationResult);
+                    update: (cache) => {
                         const { options } = cache.readQuery({
-                            query: GET_OPTIONS,
+                            query: GET_OPTIONS_BY_SESSION_AND_USER,
                             variables: {
                                 sessionId: session._id,
                                 userId: '1'
                             }
                         });
-                        console.log('new options', options);
                         cache.writeQuery({
-                            query: GET_OPTIONS,
+                            query: GET_OPTIONS_BY_SESSION_AND_USER,
                             data: { options: options }
                         });
                     }

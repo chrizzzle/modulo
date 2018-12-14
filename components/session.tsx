@@ -1,44 +1,52 @@
 import {Session} from '../entities/Session';
 import Typography from '@material-ui/core/Typography';
 import * as React from 'react';
+import {ChangeEvent} from 'react';
 import {Option} from '../entities/Option';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
-import {ChangeEvent} from 'react';
+import Button from '@material-ui/core/Button/Button';
 
 
 interface SessionProps {
-    data: {
+    sessionQuery: {
         session: Session;
+    };
+    optionsQuery: {
         options: Option[];
+    };
+    voteCountQuery: {
         voteCountBySession: {
             count: number;
         }
-    };
-    onVoteOption: (session: Session, option: Option) => (e: ChangeEvent) => void;
-    voteCount: {
+    }
+    voteCountSubscription: {
         error: any;
         loading: boolean;
         voteCountBySession: {
             count: number;
         };
     }
+    onVoteOption: (session: Session, option: Option) => (e: ChangeEvent) => void;
 }
 
 export default (props: SessionProps) => {
-    const count = props.voteCount && props.voteCount.voteCountBySession && props.voteCount.voteCountBySession.count
-        ? props.voteCount.voteCountBySession.count
-        : props.data.voteCountBySession.count;
+    console.log('props', props);
+    const count = props.voteCountSubscription &&
+                  props.voteCountSubscription.voteCountBySession &&
+                  props.voteCountSubscription.voteCountBySession.count
+        ? props.voteCountSubscription.voteCountBySession.count
+        : props.voteCountQuery.voteCountBySession.count;
 
     const voteString = count === 1 ? 'Vote' : 'Votes';
 
     return <div>
         <Typography component="h1" variant="h5" gutterBottom>
-            {props.data.session.question}
+            {props.sessionQuery.session.question}
         </Typography>
         <Typography>
-            {props.data.session.description}<br />
+            {props.sessionQuery.session.description}<br />
             {`${count} ${voteString}`}
         </Typography>
 
@@ -46,15 +54,27 @@ export default (props: SessionProps) => {
             aria-label="Answer"
             name="answer">
             {
-                props.data.options.map(
+                props.optionsQuery.options.map(
                     (option: Option) =>
                         <FormControlLabel
                             value={option.name}
-                            control={<Checkbox checked={option.checked} onChange={props.onVoteOption(props.data.session, option)}/>}
+                            control={<Checkbox checked={option.checked} onChange={props.onVoteOption(props.sessionQuery.session, option)}/>}
                             label={option.name}
                             key={option._id}/>
                 )
             }
         </RadioGroup>
+
+        <a href="/">
+            <Button type="button" variant="outlined">
+                Back
+            </Button>
+        </a>
+        &nbsp;&nbsp;
+        <a href={`/dashboard?id=${props.sessionQuery.session._id}`}>
+            <Button type="button" variant="outlined">
+                Dashboard
+            </Button>
+        </a>
     </div>
 };

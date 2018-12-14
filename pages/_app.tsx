@@ -9,6 +9,7 @@ import getPageContext from '../lib/getPageContext';
 import AppBar from '@material-ui/core/AppBar/AppBar';
 import Toolbar from '@material-ui/core/Toolbar/Toolbar';
 import Typography from '@material-ui/core/Typography/Typography';
+import ReloadIcon from '@material-ui/icons/Autorenew';
 
 class MyApp extends App {
     private pageContext: any;
@@ -40,11 +41,12 @@ class MyApp extends App {
                     <CssBaseline />
                     <ApolloProvider client={apolloClient}>
                         <AppBar position="static" color="default">
-                            <a href="/">
-                                <Toolbar>
-                                        <Typography variant="h6" color="inherit">VTR</Typography>
-                                </Toolbar>
-                            </a>
+                            <Toolbar className={"toolbar"}>
+                                <a href="/">
+                                    <Typography variant="h6" color="inherit">VTR</Typography>
+                                </a>
+                                <ReloadIcon />
+                            </Toolbar>
                         </AppBar>
 
                         <div className="container">
@@ -59,6 +61,10 @@ class MyApp extends App {
                                 }
                                 .container {
                                     padding: 15px;
+                                }
+                                .toolbar {
+                                    display: flex;
+                                    justify-content: space-between;
                                 }
                             `}</style>
                             <Component pageContext={this.pageContext} {...pageProps} />

@@ -80,11 +80,11 @@ export default (props: CreateProps) => (
                 </Grid>
             </Grid>
 
-            <Link href="/">
+            <a href="/">
                 <Button type="button" variant="outlined">
                     Back
                 </Button>
-            </Link>&nbsp;&nbsp;
+            </a>&nbsp;&nbsp;
             <Button type="submit" className="poll-form-submit" variant="contained" color="primary">
                 Save
             </Button>

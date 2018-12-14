@@ -143,7 +143,7 @@ const typeDefs = gql`
           
           type Subscription {
             voteCountBySession(sessionId: ID!): VoteCountBySession
-            voteAdded(sessionId: ID!): [Vote]
+            votes(sessionId: ID!): [Vote]
             voteCount(sessionId: ID!, userId: ID!): [VoteCount]
             timerChanged(sessionId: ID!): Session
             sessionStarted(sessionId: ID!): Session
@@ -234,14 +234,15 @@ const getSession = (args) => {
 // Provide resolver functions for your schema fields
 const resolvers = {
   Subscription: {
-    voteAdded: {
+    votes: {
       subscribe: withFilter(
-        () => pubsub.asyncIterator('voteAdded'),
+        () => pubsub.asyncIterator('votes'),
         (payload, variables) => {
           return payload && payload.sessionId && payload.sessionId === variables.sessionId;
         }
       ),
       resolve: (payload, args, context, info) => {
+        console.log('votes', payload.votes);
         return payload.votes;
       }
     },
@@ -426,6 +427,15 @@ const resolvers = {
           pubsub.publish('voteCountBySession', {
             sessionId: args.sessionId,
             voteCount
+          });
+
+          voteModel.find({
+            sessionId: args.sessionId
+          }).then((votes) => {
+            pubsub.publish('votes', {
+              sessionId: args.sessionId,
+              votes: votes
+            });
           });
         });
         return getOptions({
